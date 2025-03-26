@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botekão Lanches - Cardápio Digital</title>
+    
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap CSS (opcional) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- CSS Personalizado -->
+    <style>
+        :root {
+            --laranja: #FF8C00;
+            --amarelo: #FFD700;
+            --vermelho: #E63946;
+            --cinza: #2B2D42;
+            --branco: #FFF8E1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--branco);
+            color: var(--cinza);
+        }
+        
+        /* Cabeçalho */
+        header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1512152272829-e3139592d56f');
+            background-size: cover;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--amarelo);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* Cardápio */
+        .produto-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .produto-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* WhatsApp Button */
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        /* Admin Panel (oculto inicialmente) */
+        #adminPanel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 2000;
+            color: white;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    
+    <!-- Meta Pixel Code -->
+    <script>
+        !function(f,b,e,v,n,t,s) {
+            if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)
+        }(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', 'SEU_PIXEL_ID_AQUI'); // SUBSTITUA PELO SEU PIXEL
+        fbq('track', 'PageView');
+    </script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SEU_ID_AQUI"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-SEU_ID_AQUI'); // SUBSTITUA PELO SEU GA4
+    </script>
+</head>
+<body>
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/554532642245?text=Olá,%20gostaria%20de%20fazer%20um%20pedido!" class="whatsapp-btn">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    
+    <!-- Admin Button (flutuante) -->
+    <div class="admin-btn" onclick="toggleAdminPanel()" style="position:fixed; bottom:2rem; left:2rem; background:var(--cinza); color:white; width:50px; height:50px; border-radius:50%; display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:1000;">
+        <i class="fas fa-user-shield"></i>
+    </div>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">Botekão Lanches</div>
+            <p>Os melhores lanches de Medianeira!</p>
+            <div class="contact-info">
+                <i class="fas fa-phone"></i> (45) 3264-2245<br>
+                <i class="fas fa-map-marker-alt"></i> Av. Brasil, 1877 - Centro
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Cardápio -->
+        <div class="row" id="cardapio-container">
+            <!-- Produto 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="produto-card">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd" class="img-fluid" alt="X-Botekão">
+                    <div class="p-3">
+                        <h3>X-Botekão</h3>
+                        <p>Pão brioche, hambúrguer artesanal, queijo, bacon e molho especial</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" style="color: var(--laranja);">R$ 24,90</span>
+                            <button class="btn btn-primary" style="background-color: var(--laranja); border:none;" onclick="addToCart('X-Botekão', 24.90)">
+                                <i class="fas fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Produto 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="produto-card">
+                    <img src="https://images.unsplash.com/photo-1541592106381-b31e9677c0e5" class="img-fluid" alt="Batata Frita">
+                    <div class="p-3">
+                        <h3>Batata Frita</h3>
+                        <p>Porção de batata frita crocante com cheddar e bacon</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold" style="color: var(--laranja);">R$ 15,90</span>
+                            <button class="btn btn-primary" style="background-color: var(--laranja); border:none;" onclick="addToCart('Batata Frita', 15.90)">
+                                <i class="fas fa-plus"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Carrinho -->
+        <div class="cart-container mt-4 p-3" style="background-color: white; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+            <h4><i class="fas fa-shopping-cart"></i> Seu Pedido</h4>
+            <div id="cart-items"></div>
+            <div class="d-flex justify-content-between mt-3">
+                <h5>Total: <span id="cart-total">R$ 0,00</span></h5>
+                <button class="btn btn-success" onclick="checkout()">
+                    <i class="fas fa-check"></i> Finalizar Pedido
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Painel Admin (oculto inicialmente) -->
+    <div id="adminPanel">
+        <div class="container">
+            <button class="btn btn-danger mb-3" onclick="toggleAdminPanel()">
+                <i class="fas fa-times"></i> Fechar
+            </button>
+            
+            <h2><i class="fas fa-user-shield"></i> Painel Administrativo</h2>
+            
+            <!-- Login Form (inicialmente visível) -->
+            <div id="adminLogin">
+                <div class="mb-3">
+                    <label class="form-label">Usuário</label>
+                    <input type="text" id="adminUser" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Senha</label>
+                    <input type="password" id="adminPass" class="form-control">
+                </div>
+                <button class="btn btn-primary" onclick="adminLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </div>
+            
+            <!-- Admin Content (inicialmente oculto) -->
+            <div id="adminContent" style="display: none;">
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Pedidos Hoje</h5>
+                                <p class="card-text display-4">12</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Faturamento</h5>
+                                <p class="card-text display-4">R$ 487,50</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 class="mt-4"><i class="fas fa-hamburger"></i> Gerenciar Cardápio</h4>
+                <button class="btn btn-warning mb-3">
+                    <i class="fas fa-plus"></i> Adicionar Item
+                </button>
+                
+                <h4 class="mt-4"><i class="fas fa-list"></i> Últimos Pedidos</h4>
+                <table class="table table-dark">
+                    <thead>
+                        <tr>
+                            <th>Mesa</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>05</td>
+                            <td>2x X-Botekão, 1x Batata</td>
+                            <td>R$ 65,70</td>
+                            <td>
+                                <button class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i> Pronto
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-4">
+        <p>© 2023 Botekão Lanches - Aberto de Terça a Domingo, das 18h às 23h</p>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // Variáveis globais
+        let cart = [];
+        const adminCredentials = {
+            user: "admin",
+            pass: "botekao123"
+        };
+        
+        // Funções do Carrinho
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCart();
+            fbq('track', 'AddToCart'); // Evento do Pixel
+        }
+        
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            cartItems.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'd-flex justify-content-between mb-2';
+                itemElement.innerHTML = `
+                    <span>${item.name}</span>
+                    <span>R$ ${item.price.toFixed(2)}</span>
+                `;
+                cartItems.appendChild(itemElement);
+                total += item.price;
+            });
+            
+            cartTotal.textContent = `R$ ${total.toFixed(2)}`;
+        }
+        
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Adicione itens ao carrinho primeiro!');
+                return;
+            }
+            
+            const itemsText = cart.map(item => `${item.name} - R$ ${item.price.toFixed(2)}`).join('\n');
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const whatsappMessage = encodeURIComponent(
+                `📋 *PEDIDO BOTEKÃO LANCHES*\n\n` +
+                `${itemsText}\n\n` +
+                `*Total: R$ ${total.toFixed(2)}*\n\n` +
+                `💬 Observações: `
+            );
+            
+            window.open(`https://wa.me/554532642245?text=${whatsappMessage}`, '_blank');
+            
+            // Registrar conversão no Pixel
+            fbq('track', 'Purchase', {value: total, currency: 'BRL'});
+            
+            cart = [];
+            updateCart();
+        }
+        
+        // Funções do Admin
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function adminLogin() {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            
+            if (user === adminCredentials.user && pass === adminCredentials.pass) {
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+            } else {
+                alert('Usuário ou senha incorretos!');
+            }
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCart();
+        });
+    </script>
+</body>
+</html>
